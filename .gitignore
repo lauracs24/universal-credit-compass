@@ -1,0 +1,13 @@
+node_modules/
+dist/
+.env
+.env.*
+!.env.example
+*.local
+*.log
+.sites-runtime/
+.codex/
+.agents/
+*.pdf
+*.docx
+*.zip
