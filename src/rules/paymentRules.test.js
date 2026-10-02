@@ -91,11 +91,25 @@ test('a message does not become a finding that the payment has changed', () => {
     const result = getPaymentRecommendations(answers);
     assert.equal(getNextScreen('message', answers), 'results');
     assert.equal(getPreviousScreen('results', answers), 'message');
-    assert.equal(result.title, 'Understand the message first');
-    assert.match(result.explanations[0].possibility, /do not tell us whether your payment has changed/);
+    assert.doesNotMatch(result.explanations[0].possibility, /your payment (has|will) (changed|change|decrease)/);
     assert.ok(!result.resourceIds.includes('deductions'));
     if (message === 'yes') assert.match(result.nextSteps[0], /promptly/);
-    else assert.match(result.checks[1], /any action or response date/);
+    else assert.match(result.checks[1], /action or response date/);
+  }
+});
+
+test('message answers have distinct explanations, actions and drafts without declaring no deadline', () => {
+  const results = ['yes', 'no', 'unsure'].map((message) => getPaymentRecommendations({ situation: 'message', message }));
+  for (const select of [(r) => r.title, (r) => r.explanations[0].possibility, (r) => r.nextSteps[0], (r) => r.suggestedMessage]) {
+    assert.equal(new Set(results.map(select)).size, 3);
+  }
+  assert.match(results[1].explanations[0].possibility, /cannot see a date/);
+  assert.match(results[1].nextSteps[0], /to-do list/);
+  assert.match(results[1].suggestedMessage, /whether I need to reply/);
+  assert.match(results[2].nextSteps[0], /plain language/);
+  assert.match(results[2].suggestedMessage, /not sure whether/);
+  for (const message of ['', undefined, 'unknown', 'toString']) {
+    assert.deepEqual(getPaymentRecommendations({ situation: 'message', message }), results[2]);
   }
 });
 

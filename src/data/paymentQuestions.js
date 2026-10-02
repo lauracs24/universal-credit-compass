@@ -49,8 +49,8 @@ export const paymentQuestions = {
     multiple: false,
     options: [
       { value: 'yes', label: 'Yes, there is a date or deadline' },
-      { value: 'no', label: 'No, I cannot see one' },
-      { value: 'unsure', label: 'I’m not sure what it means' },
+      { value: 'no', label: 'No, I cannot see a date or deadline' },
+      { value: 'unsure', label: 'I’m not sure whether there is a deadline' },
     ],
   },
 };

@@ -30,7 +30,15 @@ the repository. Research PDFs, credentials, local tooling and dependencies are e
 The payment route asks about access to a statement, then lets the user choose
 one area: earnings, repayments, another benefit, or uncertainty. Radio buttons
 allow only one choice, and Back lets the user check another area. Someone without a statement gets help accessing it.
-The message route asks about a deadline and suggests what to clarify.
+The message route asks about a deadline. Yes, no visible deadline and uncertainty
+each have their own explanation, action and draft. A missing visible date is not
+treated as proof that no action or deadline applies.
+
+Browser Back and Forward work alongside the in-page Back button. History stores
+only screen metadata; answers and drafts stay in React memory. Start again or
+refresh invalidates earlier navigation entries so cleared journeys cannot be
+restored. Forward after editing an answer resolves against the current answers.
+The skip link focuses the main content without adding an extra history entry.
 
 Selecting repayments adds one question about the statement label: an advance,
 an overpayment, rent/service-charge arrears, another type, or uncertainty. The
@@ -129,6 +137,9 @@ npm test
 - `src/data/resources.js` contains source links, scope and the source-check date.
 - `src/rules/paymentRules.js` selects explanations and determines the next/back screen.
 - `src/rules/paymentRules.test.js` tests branching, combinations and uncertain answers.
+- `src/rules/journeyHistory.js` handles browser navigation and rejects stale routes.
+- `src/rules/journeyHistory.test.js` tests Back/Forward, resets and history privacy.
+- `src/data/messageGuidance.js` holds distinct guidance for the three deadline answers.
 - `src/styles.css` controls spacing, colour, typography and responsive layout.
 - `src/main.jsx` attaches the React application to the HTML page.
 - `vite.config.js` enables React support in Vite.
@@ -151,7 +162,13 @@ The expandable information still uses native HTML `details` and `summary`.
   Go Back and confirm the single choice is preserved.
 - Go back to the statement question and change Yes to No: old areas must not appear
   in the result. Returning to Yes should start those later choices afresh.
-- Try every “I’m not sure” option and both message deadline answers.
+- Try every “I’m not sure” option and all three message deadline answers. Confirm
+  their headings, actions and drafts differ and no answer promises there is no deadline.
+- On message and repayment journeys, mix browser Back/Forward with the in-page
+  Back button. Preserve selections, original drafts and follow-up edits unless an
+  answer changes. Changing an answer must clear drafts and obsolete deduction details.
+- After Start again or refresh, Back/Forward must not restore cleared answers or
+  drafts. Check browser navigation in Firefox as well as a Chromium browser.
 - Select repayments and confirm that the extra question appears. Try every type,
   then go Back and remove repayments: the old type must not affect the result.
 - Try all four deduction-need answers. Back preserves the selected need; changing

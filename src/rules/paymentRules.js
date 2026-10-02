@@ -1,6 +1,7 @@
 import { generalPaymentGuidance, paymentGuidance } from '../data/paymentGuidance.js';
 import { deductionGuidance } from '../data/deductionGuidance.js';
 import { deductionNeeds } from '../data/deductionNeeds.js';
+import { messageGuidance } from '../data/messageGuidance.js';
 
 export function getNextScreen(screen, answers) {
   if (screen === 'statement' && answers.statement === 'yes') return 'changes';
@@ -42,31 +43,25 @@ export function updatePaymentAnswer(previous, screen, value) {
 
 export function getPaymentRecommendations(answers = {}) {
   if (answers.situation === 'message') {
-    const hasDeadline = answers.message === 'yes';
+    const guidance = Object.hasOwn(messageGuidance, answers.message) ? messageGuidance[answers.message] : messageGuidance.unsure;
     return {
-      title: 'Understand the message first',
+      title: guidance.title,
       accountHelpId: 'message',
       contactHelpId: 'message',
       deadlineNote: 'Check the message and to-do list for a response date. Do not assume it changes while you wait. If you disagree with a decision, check its challenge instructions and seek advice promptly.',
       explanations: [{
         title: 'A message needs its own explanation',
-        possibility: 'Your answers do not tell us whether your payment has changed or whether a decision has been made. The message’s wording matters.',
+        possibility: guidance.explanation,
       }],
       checks: [
         'Read what the message asks for and check whether it refers to a decision, a request for information or a change you reported.',
-        hasDeadline
-          ? 'Find the response date and the action requested. Keep these together so you can refer to them.'
-          : 'Check the message and your to-do list for any action or response date you may have missed.',
+        guidance.check,
       ],
       nextSteps: [
-        hasDeadline
-          ? 'Contact Universal Credit promptly if you do not understand the request or cannot meet the date. Explain the difficulty and ask what you need to do.'
-          : 'Ask Universal Credit to explain what the message means for your claim and whether you need to do anything.',
+        guidance.nextStep,
         'If it is a decision you disagree with, seek benefits advice promptly and check the decision notice for how and when to challenge it.',
       ],
-      suggestedMessage: hasDeadline
-        ? 'I have a message with a response date. Please explain what I need to do and how I can get help if I cannot complete it by that date.'
-        : 'I do not understand the message in my account. Please explain what it means for my payment and whether I need to take any action.',
+      suggestedMessage: guidance.message,
       resourceIds: ['account', 'contact', 'decision', 'moneyHelper'],
     };
   }

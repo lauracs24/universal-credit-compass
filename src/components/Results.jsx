@@ -16,10 +16,10 @@ export default function Results({ recommendations, draftMessage, onDraftChange, 
         {recommendations.explanations.map((explanation) => (
           <p key={explanation.title}>{explanation.possibility}</p>
         ))}
-        <p className="small-text">This guide cannot decide whether your payment is correct.</p>
+        <p className="small-text">{recommendations.accountHelpId === 'message'
+          ? 'Universal Credit can confirm what the message means for your claim.'
+          : 'This guide cannot decide whether your payment is correct.'}</p>
       </section>
-
-      <FollowUpHelp choice={followUp.choice} onSelect={(choice) => onFollowUpChange((previous) => ({ ...previous, choice }))} />
 
       <section aria-labelledby="actions-heading" className="next-action">
         <div id="next-action-content" aria-live="polite" aria-atomic="true">
@@ -40,6 +40,8 @@ export default function Results({ recommendations, draftMessage, onDraftChange, 
         {recommendations.deadlineNote && <p>{recommendations.deadlineNote}</p>}
         {followUpAdvice && <p>If a response date is near or you cannot meet it, contact the team promptly. This follow-up does not challenge a decision or extend any deadline.</p>}
       </div>}
+
+      <FollowUpHelp choice={followUp.choice} onSelect={(choice) => onFollowUpChange((previous) => ({ ...previous, choice }))} />
 
       <MessageDraft
         key={followUp.choice || 'original'}

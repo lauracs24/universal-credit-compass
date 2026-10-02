@@ -3,7 +3,8 @@ import QuestionCard from './components/QuestionCard.jsx';
 import Results from './components/Results.jsx';
 import { paymentQuestions } from './data/paymentQuestions.js';
 import { guidanceReview, resources } from './data/resources.js';
-import { getNextScreen, getPaymentRecommendations, getPreviousScreen, updatePaymentAnswer } from './rules/paymentRules.js';
+import { getNextScreen, getPaymentRecommendations, updatePaymentAnswer } from './rules/paymentRules.js';
+import { createJourneyHistory, resolveJourneyScreen } from './rules/journeyHistory.js';
 
 const emptyAnswers = { situation: '', statement: '', changes: [], deduction: '', deductionNeed: '', message: '' };
 
@@ -13,6 +14,9 @@ export default function App() {
   const [messageDraft, setMessageDraft] = useState(null);
   const [followUp, setFollowUp] = useState({ choice: '', drafts: {} });
   const headingRef = useRef(null);
+  const navigationRef = useRef(null);
+  const answersRef = useRef(answers);
+  answersRef.current = answers;
   const question = paymentQuestions[screen];
   const recommendations = screen === 'results' ? getPaymentRecommendations(answers) : null;
   const title = question?.title || recommendations?.title || 'What’s happening with your Universal Credit?';
@@ -23,6 +27,12 @@ export default function App() {
   }
 
   useEffect(() => {
+    const navigation = createJourneyHistory(window, setScreen, (target) => resolveJourneyScreen(target, answersRef.current));
+    navigationRef.current = navigation;
+    return () => navigation.dispose();
+  }, []);
+
+  useEffect(() => {
     document.title = `${title} — Universal Credit Compass`;
     headingRef.current?.focus({ preventScroll: true });
     window.scrollTo(0, 0);
@@ -31,7 +41,7 @@ export default function App() {
   function startGuide(situation) {
     clearDrafts();
     setAnswers({ ...emptyAnswers, situation });
-    setScreen(situation === 'message' ? 'message' : 'statement');
+    navigationRef.current.go(situation === 'message' ? 'message' : 'statement');
   }
 
   function updateAnswer(value) {
@@ -42,12 +52,15 @@ export default function App() {
   function startAgain() {
     clearDrafts();
     setAnswers(emptyAnswers);
-    setScreen('home');
+    navigationRef.current.reset();
   }
 
   return (
     <div className="app">
-      <a className="skip-link" href="#main-content">Skip to main content</a>
+      <a className="skip-link" href="#main-content" onClick={(event) => {
+        event.preventDefault();
+        document.getElementById('main-content').focus();
+      }}>Skip to main content</a>
 
       <header className="site-header">
         <div className="content-width">
@@ -56,11 +69,11 @@ export default function App() {
         </div>
       </header>
 
-      <main id="main-content" className="content-width" tabIndex={-1}>
+      <main id="main-content" className={`content-width${screen === 'results' ? ' results-page' : ''}`} tabIndex={-1}>
         <p className="prototype-notice">Testing version · Try the guide using fictional details and check the linked guidance.</p>
         {screen !== 'home' && (
           <nav className="journey-navigation" aria-label="Guide navigation">
-            <button type="button" className="text-button" onClick={() => setScreen(getPreviousScreen(screen, answers))}>Back</button>
+            <button type="button" className="text-button" onClick={() => navigationRef.current.back()}>Back</button>
             <button type="button" className="text-button" onClick={startAgain}>Start again</button>
           </nav>
         )}
@@ -89,7 +102,7 @@ export default function App() {
             question={question}
             answer={screen === 'changes' ? (answers.changes[0] || '') : answers[screen]}
             onAnswer={updateAnswer}
-            onContinue={() => setScreen(getNextScreen(screen, answers))}
+            onContinue={() => navigationRef.current.go(getNextScreen(screen, answers))}
             buttonLabel={getNextScreen(screen, answers) === 'results' ? 'Show my next steps' : 'Continue'}
           />
         )}

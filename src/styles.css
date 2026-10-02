@@ -72,7 +72,7 @@ fieldset { border: 0; margin: 0; padding: 0; min-width: 0; }
 li + li { margin-top: 0.875rem; }
 ul, ol { padding-left: 1.5rem; margin-block: 0; }
 
-.home-options, .answer-options { display: grid; gap: 0.875rem; }
+.home-options, .answer-options { display: grid; gap: 1.125rem; }
 .situation-button {
   display: grid;
   gap: 0.5rem;
@@ -88,8 +88,11 @@ ul, ol { padding-left: 1.5rem; margin-block: 0; }
 .situation-button:hover, .answer-option:hover { background: #eef5f6; }
 .scope-note { margin-block: 1.5rem; font-size: 1rem; color: var(--muted-text); }
 .journey-navigation { display: flex; justify-content: space-between; gap: 1rem; margin-bottom: 1.25rem; }
+main.results-page { padding-top: 1.5rem; }
+.results-page .prototype-notice { margin-bottom: 1rem; }
+.results-page .journey-navigation { margin-bottom: 0.75rem; }
 .text-button { padding: 0.625rem 0.25rem; border: 0; background: transparent; color: var(--accent); text-decoration: underline; text-underline-offset: 0.2em; min-height: 2.75rem; }
-.answer-option { display: flex; align-items: flex-start; gap: 0.875rem; padding: 1rem; border: 2px solid var(--border); border-radius: 0.5rem; background: #ffffff; cursor: pointer; }
+.answer-option { display: flex; align-items: flex-start; gap: 0.875rem; padding: 1.25rem; border: 2px solid var(--border); border-radius: 0.5rem; background: #ffffff; cursor: pointer; }
 .answer-option:has(input:checked) { border-color: var(--accent); background: #e9f3f4; }
 .answer-option input { width: 1.5rem; height: 1.5rem; flex-shrink: 0; margin: 0.2rem 0 0; accent-color: var(--accent); }
 .answer-label { display: block; font-weight: 700; }
@@ -103,13 +106,19 @@ ul, ol { padding-left: 1.5rem; margin-block: 0; }
 .action-link { display: inline-block; padding-block: 0.5rem; font-weight: 700; }
 .link-note { font-size: 1rem; font-weight: 400; }
 .deadline-note { margin-block: 1.25rem; }
-.result-introduction { margin-block: 1.25rem; }
+.results { display: grid; gap: 1.75rem; margin-top: 1.75rem; }
+.results > section, .results > .deadline-note { margin-block: 0; }
+.results p { margin-bottom: 1.25rem; }
+.results section > p:last-child, .deadline-note p:last-child { margin-bottom: 0; }
+.results .next-action, .results .message-draft { padding: clamp(1.25rem, 4vw, 1.75rem); }
+.results .contact-alternative { margin-top: 1rem; }
+.result-introduction { margin-block: 0; }
 .result-introduction > p:last-child { margin-bottom: 0; }
 .result-detail { border-top: 1px solid var(--border); }
 .result-detail > summary { padding-block: 1rem; }
-.result-detail-content { padding: 0.25rem 0 1.25rem; }
+.result-detail-content { padding: 0.75rem 0 1.5rem; }
 .follow-up-help legend { margin-bottom: 0.75rem; }
-.more-help section + section { margin-top: 1.75rem; }
+.more-help section + section { margin-top: 2rem; }
 .account-help-note { margin-top: 1rem; }
 .message-draft { margin-block: 1.5rem; padding: 1.25rem; border: 1px solid var(--border); border-radius: 0.5rem; background: #ffffff; }
 .message-draft textarea { display: block; width: 100%; min-height: 9rem; margin-block: 0.5rem 1rem; padding: 0.875rem; border: 2px solid var(--border); border-radius: 0.25rem; background: #ffffff; color: inherit; line-height: 1.6; resize: vertical; }
